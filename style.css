@@ -5,3 +5,34 @@
 footer nav{flex-wrap:wrap;justify-content:center}footer nav a.roky-transfer-link{font-size:10px;min-height:44px;padding:8px 12px}
 /* Web bank transfer: keep Play distribution policy separate. */
 nav.roky-social a.roky-transfer-link,a.roky-transfer-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 12px;box-sizing:border-box;border:1px solid #a28a12;border-radius:9px;background:#ffe14c;color:#242000;font:600 13px/1.4 system-ui,sans-serif;text-decoration:none;white-space:nowrap}nav.roky-social a.roky-transfer-link:hover,a.roky-transfer-link:hover{background:#ffed91;color:#242000}nav.roky-social a.roky-transfer-link:focus-visible,a.roky-transfer-link:focus-visible{outline:3px solid #2676c4;outline-offset:3px}
+
+/* Roky Studio ebook destination */
+nav.roky-social a.roky-ebook-link,a.roky-ebook-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;min-height:44px;padding:8px 12px;border:1px solid #849ab8;border-radius:9px;background:#e7efff;color:#17365d;font:600 13px/1.4 system-ui,sans-serif;text-decoration:none;white-space:nowrap}nav.roky-social a.roky-ebook-link:hover,a.roky-ebook-link:hover{background:#cedfff;color:#17365d}nav.roky-social a.roky-ebook-link:focus-visible,a.roky-ebook-link:focus-visible{outline:3px solid #2469bd;outline-offset:3px}
+
+/* Translations flow naturally; native language names remain easy to recognize. */
+:root{font-family:"Pretendard","Noto Sans KR","Malgun Gothic","Yu Gothic","Microsoft YaHei",system-ui,sans-serif}
+.language-picker{display:inline-flex;align-items:center;gap:5px}
+.language-picker select{min-height:44px;max-width:125px;font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px;cursor:pointer}
+select:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.site-header{min-height:87px;height:auto;gap:14px;padding-block:14px;flex-wrap:wrap}
+.site-header nav{flex-wrap:wrap;gap:18px}
+.intro>div{min-width:0}.daily-stamp{flex-shrink:0}
+.difficulty button{min-width:0}.difficulty small{line-height:1.5}
+.board-top{gap:8px}.puzzle-tag{min-width:0}.time{flex-shrink:0}
+.game-heading{gap:10px}.game-heading h2{line-height:1.4}.issue{flex-shrink:0}
+.game-foot>span{min-width:0}#hint-count{flex-shrink:0}
+.win{flex-wrap:wrap}.win>div{flex:1;min-width:120px}
+.week-label{gap:6px;flex-wrap:wrap}.week-label>span+span{text-align:right}
+.dialog-head h2{overflow-wrap:anywhere}.dialog-head button{flex-shrink:0}
+.dialog-actions button,.dialog-actions label{max-width:100%;overflow-wrap:anywhere}
+html:not([lang=ko]) h1{letter-spacing:-1.5px}
+@media(max-width:760px){
+ .site-header{min-height:72px;gap:4px 12px}.site-header nav{gap:8px}
+ .language-picker select{max-width:110px;padding:7px 4px}.language-picker>span{display:none}
+ .intro{gap:12px}.daily-stamp{max-width:43%;padding:12px 8px;transform:none}
+ .reset-time{display:block;line-height:1.7}.difficulty button{padding:12px 8px}
+ html:not([lang=ko]) h1{font-size:34px}.tools button{padding:0 8px}
+ .sidebar>*{min-width:0}.stats>div{min-width:0}.stats b small{letter-spacing:0;font-size:10px}
+ .footer-brand{flex-wrap:wrap;justify-content:center}
+}
+@media(max-width:550px){.site-header{align-items:flex-start}.site-header nav{width:100%;justify-content:space-between}.studio-back{min-height:32px}.intro{flex-wrap:wrap}.intro>div:first-child{flex:1 1 180px}.daily-stamp{margin-top:7px;max-width:100%}.toolbar{flex-direction:column;gap:8px}.assist{width:100%;justify-content:center;gap:24px}.assist button:first-child span{display:inline}.game-foot{font-size:9px;gap:7px}}

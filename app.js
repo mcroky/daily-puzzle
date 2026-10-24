@@ -2,6 +2,7 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const store = window.RokyStorage;
+  const I = window.RokyI18n, t = I.t;
   let callback, state, toastTimer, focusBeforeDialog, loadingStarted = false;
   const format = seconds => `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
   let reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -20,7 +21,7 @@
       el.disabled = false;
       el.setAttribute('aria-pressed', String(Number(el.dataset.level) === s.level));
       el.querySelector('i').classList.toggle('done', s.stats.today.includes(Number(el.dataset.level)));
-      el.setAttribute('aria-label', `${el.querySelector('span').textContent} ${el.dataset.level} 곱하기 ${el.dataset.level}${s.stats.today.includes(Number(el.dataset.level)) ? ' 오늘 완료' : ''}`);
+      el.setAttribute('aria-label', t('난이도 {name} {n} 곱하기 {n}{done}', {name:el.querySelector('span').textContent, n:el.dataset.level, done:s.stats.today.includes(Number(el.dataset.level)) ? ', ' + t('오늘 완료') : ''}));
     }
     for (const el of document.querySelectorAll('[data-mode]')) {
       el.disabled = s.completed || s.paused;
@@ -30,37 +31,36 @@
     $('hint').disabled = $('reset').disabled = s.completed || s.paused;
     $('undo').disabled = !s.undo || s.paused;
     $('timer').textContent = format(s.elapsed);
-    $('timer').setAttribute('aria-label', `플레이 시간 ${Math.floor(s.elapsed / 60)}분 ${s.elapsed % 60}초`);
-    $('puzzle-label').textContent = s.completed ? '오늘도 한 장 완성' : '오늘의 퍼즐';
-    $('daily-date').textContent = s.day.replaceAll('-', '. ');
+    $('timer').setAttribute('aria-label', t('플레이 시간 {minutes}분 {seconds}초', {minutes:Math.floor(s.elapsed / 60), seconds:s.elapsed % 60}));
+    $('puzzle-label').textContent = t(s.completed ? '오늘도 한 장 완성' : '오늘의 퍼즐');
+    $('daily-date').textContent = I.date(s.day);
     $('daily-date').dateTime = s.day;
     $('issue').textContent = `No. ${String(Math.max(1, Math.floor((Date.parse(s.day) - Date.parse('2026-10-24')) / 86400000) + 1)).padStart(3, '0')}`;
-    $('hint-count').textContent = `힌트 ${s.hints}회 사용`;
-    $('storage-status').textContent = s.storageMessage;
+    $('hint-count').textContent = t('힌트 {n}회 사용', {n:s.hints});
+    $('storage-status').textContent = t(s.storageMessage);
     $('storage-status').classList.toggle('error', !s.storageOK);
     $('stat-solved').textContent = s.stats.solved;
-    $('stat-streak').replaceChildren(document.createTextNode(String(s.stats.streak)), Object.assign(document.createElement('small'), { textContent: '일' }));
+    $('stat-streak').replaceChildren(document.createTextNode(String(s.stats.streak)), Object.assign(document.createElement('small'), { textContent: t('일') }));
     $('win').hidden = !s.completed;
-    $('win-copy').textContent = `${s.level} × ${s.level} · ${format(s.elapsed)} · ${s.hints ? `힌트 ${s.hints}회` : '힌트 없이 스스로'} 완성`;
+    $('win-copy').textContent = t('{n} × {n} · {time} · {hints} 완성', {n:s.level, time:format(s.elapsed), hints:s.hints ? t('힌트 {n}회', {n:s.hints}) : t('힌트 없이 스스로')});
     $('pause-cover').hidden = !s.paused;
     renderWeek(s);
     renderTextBoard(s);
-    if (s.message) { $('announce').textContent = s.message; toast(s.message); }
+    if (s.message) { $('announce').textContent = t(s.message, s.messageArgs); toast(t(s.message, s.messageArgs)); }
   }
   function renderWeek(s) {
-    const signature = s.day + s.stats.recent.join(',');
+    const signature = I.language + s.day + s.stats.recent.join(',');
     if ($('week').dataset.key === signature) return;
     $('week').dataset.key = signature;
     $('week').replaceChildren();
-    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(Date.parse(s.day) - i * 86400000);
       const day = d.toISOString().slice(0, 10);
       const done = s.stats.recent.includes(day);
       const div = document.createElement('div');
       div.className = `${done ? 'done' : ''} ${i === 0 ? 'today' : ''}`;
-      div.setAttribute('aria-label', `${day} ${done ? '완료' : '완료 기록 없음'}`);
-      div.append(document.createTextNode(weekdays[d.getUTCDay()]), Object.assign(document.createElement('b'), { textContent: done ? '✓' : String(d.getUTCDate()) }));
+      div.setAttribute('aria-label', `${I.date(day)} ${t(done ? '완료' : '완료 기록 없음')}`);
+      div.append(document.createTextNode(I.weekday(d)), Object.assign(document.createElement('b'), { textContent: done ? '✓' : String(d.getUTCDate()) }));
       $('week').append(div);
     }
   }
@@ -75,16 +75,16 @@
       });
     }
     [...board.children].forEach((button, i) => {
-      const name = ['미표시', '채움', '빈칸'][s.cells[i]];
+      const name = t(['미표시', '채움', '빈칸'][s.cells[i]]);
       button.textContent = ['·', '■', '×'][s.cells[i]];
       button.dataset.value = s.cells[i];
       button.disabled = s.completed || s.paused;
-      button.setAttribute('aria-label', `${Math.floor(i / s.level) + 1}행 ${i % s.level + 1}열 ${name}`);
+      button.setAttribute('aria-label', t('{row}행 {col}열 {name}', {row:Math.floor(i / s.level) + 1, col:i % s.level + 1, name}));
     });
-    $('clue-text').textContent = `행 힌트: ${s.rows.map((c, i) => `${i + 1}행 ${c.join(', ')}`).join(' / ')}. 열 힌트: ${s.cols.map((c, i) => `${i + 1}열 ${c.join(', ')}`).join(' / ')}.`;
+    $('clue-text').textContent = t('행 힌트: {rows}. 열 힌트: {cols}.', {rows:s.rows.map((c,i) => t('{n}행 {clues}', {n:i+1, clues:c.join(', ')})).join(' / '), cols:s.cols.map((c,i) => t('{n}열 {clues}', {n:i+1, clues:c.join(', ')})).join(' / ')});
   }
   function download(raw, name) {
-    if (!raw) { toast('아직 저장된 기록이 없어요.'); return; }
+    if (!raw) { toast(t('아직 저장된 기록이 없어요.')); return; }
     const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' }));
     const link = Object.assign(document.createElement('a'), { href: url, download: name });
     link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
@@ -97,13 +97,14 @@
     const pages = {
       help: ['네모로직, 이렇게 풀어요', '<p>가로·세로 숫자를 보고 숨겨진 칸을 채우는 논리 퍼즐이에요. 모든 채울 칸을 맞히면 완성됩니다.</p><div class="example"><b>2 1</b><i class="on"></i><i class="on"></i><i>×</i><i class="on"></i><i>×</i></div><ol><li><strong>숫자 = 연속으로 채울 칸의 수.</strong> 2, 1이면 두 칸 묶음 뒤에 한 칸 묶음이 있어요.</li><li>묶음 사이에는 빈칸이 하나 이상 있어야 해요. 숫자 순서도 같아야 합니다.</li><li>0은 그 줄에 채울 칸이 없다는 뜻이에요.</li><li>빈칸 표시(×)는 메모예요. 정답의 채울 칸을 모두 찾으면 나머지 빈칸은 자동으로 표시돼요.</li></ol><h3>편한 방법으로 플레이</h3><p>마우스 클릭·드래그로 표시하고 우클릭으로 빈칸을 표시해요. 휴대폰에서는 아래 도구를 선택하고 칸을 눌러주세요. 같은 표시를 다시 누르면 지워집니다.</p><p>키보드: 보드에서 방향키로 이동, Space·Enter로 선택 도구 사용, X로 빈칸, Delete로 지우기, Ctrl/⌘ + Z로 되돌리기. 화면 읽기 프로그램은 보드 아래의 텍스트 보드를 이용해 주세요.</p><h3>매일 세 가지 도전</h3><p>한국 시간 자정에 새 퍼즐이 열려요. 난이도를 바꿔도 현재 진행은 남아 있어요. 모든 퍼즐은 숫자만으로 추측 없이 풀 수 있는지 검사합니다. 힌트는 한 칸을 알려주며 사용 횟수가 기록돼요. 완성 전에는 정답을 자동 검사하지 않아요.</p><label><input id="reduce-motion" type="checkbox"> 움직임 줄이기</label>'],
       privacy: ['기록은 내 기기에만', '<p>로그인 없이 사용해요. 퍼즐 진행 상황, 완료 기록, 시간과 힌트 횟수를 현재 브라우저의 localStorage에 저장합니다. 기록을 서버나 Supabase로 전송하지 않습니다.</p><p>다른 기기·브라우저와는 자동 동기화되지 않아요. 방문 기록이나 사이트 데이터를 지우거나 시크릿 모드를 닫으면 기록이 사라질 수 있습니다. <strong>백업 관리에서 JSON 파일을 내려받아 보관해 주세요.</strong></p><p>자동 저장이 실패하면 보드 아래에 안내합니다. 이때는 탭을 닫기 전에 백업을 내려받아 주세요. 저장 기록이 손상되면 원본을 보존하고, 가능한 경우 이전 정상 기록을 불러옵니다.</p><p>서비스 제공을 위해 GitHub Pages에서 게임 파일을 내려받아요. 개선 의견·소셜 링크는 외부 사이트의 새 탭으로 연결됩니다.</p><p>완료 기록은 최대 1,095개 퍼즐을 보관해요. 이보다 오래된 기록은 정리됩니다. 기기 시계가 잘못되어 있으면 일일 퍼즐 날짜도 달라질 수 있어요.</p>'],
-      updates: ['업데이트 내역', '<p class="eyebrow">2026.10.24 · v1.0.0</p><h3>하루 한 장, 첫 번째 페이지</h3><p>더 좋은 앱을 위한 후원 버튼에서 Buy Me a Coffee 후원 페이지를 새 탭으로 열 수 있습니다.</p><ul><li>Godot 4.5.2로 그린 5×5·7×7·9×9 일일 네모로직</li><li>한국 시간 자정 갱신, 검증된 날짜별 랜덤 퍼즐</li><li>진행 자동 저장, 이전 정상 기록 보존, JSON 백업·복원</li><li>빈칸 표시, 드래그, 되돌리기, 힌트, 완료 기록</li><li>모바일·키보드·텍스트 보드, 움직임 줄이기</li></ul>'],
+      updates: ['업데이트 내역', '<p class="eyebrow">2026.10.24 · v1.1.0</p><h3>네 가지 언어로 만나는 오늘의 퍼즐</h3><p>영어·일본어·중국어(간체)와 언어 선택을 추가했어요. 선택한 언어는 이 브라우저에 저장되며 퍼즐 진행과 백업은 그대로 이어집니다.</p><p class="eyebrow">2026.10.24 · v1.0.0</p><h3>하루 한 장, 첫 번째 페이지</h3><p>공통 메뉴의 전자책 버튼에서 로키스튜디오 전자책 안내를 새 탭으로 열 수 있습니다.</p><p>더 좋은 앱을 위한 후원 버튼에서 Buy Me a Coffee 후원 페이지를 새 탭으로 열 수 있습니다.</p><ul><li>Godot 4.5.2로 그린 5×5·7×7·9×9 일일 네모로직</li><li>한국 시간 자정 갱신, 검증된 날짜별 랜덤 퍼즐</li><li>진행 자동 저장, 이전 정상 기록 보존, JSON 백업·복원</li><li>빈칸 표시, 드래그, 되돌리기, 힌트, 완료 기록</li><li>모바일·키보드·텍스트 보드, 움직임 줄이기</li></ul>'],
       reset: ['현재 퍼즐을 비울까요?', '<p>지금 선택한 난이도의 칸 표시를 모두 지워요. 플레이 시간과 힌트 횟수는 유지됩니다. 되돌리기로 복구할 수 있어요.</p><div class="dialog-actions"><button class="danger" id="confirm-reset">칸 모두 지우기</button><button id="cancel-reset">계속 풀기</button></div>'],
       records: ['차곡차곡 쌓인 기록', '<p id="record-summary"></p><p id="recent-records"></p><h3>백업 내려받기 · 복원</h3><p>백업에는 모든 난이도의 진행·완료 기록이 포함돼요. 다른 기기로 옮길 때도 사용할 수 있어요. 복원하면 현재 기록을 교체하므로 먼저 백업해 주세요.</p><div class="dialog-actions"><button id="export-backup">기록 백업 ↓</button><label for="import-backup">백업 파일 선택 ↑</label><input class="backup-input" id="import-backup" type="file" accept="application/json,.json"></div><p id="import-status" role="status"></p><div id="import-confirm" class="dialog-actions" hidden><button id="confirm-import">선택한 백업으로 교체</button><button id="cancel-import">취소</button></div><div id="recovery-options" hidden><h3>보존된 원본 확인</h3><p>손상된 원본을 내려받아 보관한 뒤, 현재 복구한 기록으로 저장을 다시 시작할 수 있어요.</p><div class="dialog-actions"><button id="export-original">보존된 원본 ↓</button><button id="confirm-recovery">현재 기록으로 복구 확정</button></div></div>'],
     };
     const [title, html] = pages[type] || pages.help;
-    $('dialog-title').textContent = title;
+    $('dialog-title').textContent = t(title);
     content.innerHTML = html;
+    I.register(content); I.apply();
     if (type === 'help') {
       $('reduce-motion').checked = reduceMotion;
       $('reduce-motion').onchange = e => {
@@ -114,7 +115,7 @@
       };
     }
     if (type === 'reset') {
-      $('confirm-reset').onclick = () => { closeDialog(); act('reset'); toast('칸을 비웠어요. 되돌리기로 복구할 수 있어요.'); };
+      $('confirm-reset').onclick = () => { closeDialog(); act('reset'); toast(t('칸을 비웠어요. 되돌리기로 복구할 수 있어요.')); };
       $('cancel-reset').onclick = closeDialog;
     }
     if (type === 'records') setupRecords();
@@ -122,34 +123,34 @@
     $('close-dialog').focus();
   }
   function setupRecords() {
-    $('record-summary').textContent = state ? `${state.stats.days}일 동안 ${state.stats.solved}개의 퍼즐을 완성했어요. 현재 연속 기록은 ${state.stats.streak}일이에요.` : '게임을 불러오는 중입니다.';
-    $('recent-records').textContent = state?.stats.recent.length ? '최근 완료일: ' + state.stats.recent.join(' · ') : '첫 한 장을 완성하고 기록을 남겨보세요.';
-    $('export-backup').onclick = () => { act('save'); download(store.current(), `오늘의퍼즐-${state?.day || '백업'}.json`); };
+    $('record-summary').textContent = state ? t('{days}일 동안 {solved}개의 퍼즐을 완성했어요. 현재 연속 기록은 {streak}일이에요.', {days:state.stats.days, solved:state.stats.solved, streak:state.stats.streak}) : t('게임을 불러오는 중입니다.');
+    $('recent-records').textContent = state?.stats.recent.length ? t('최근 완료일: {dates}', {dates:state.stats.recent.map(I.date).join(' · ')}) : t('첫 한 장을 완성하고 기록을 남겨보세요.');
+    $('export-backup').onclick = () => { act('save'); download(store.current(), `daily-puzzle-${state?.day || 'backup'}.json`); };
     let pending = '';
     $('import-backup').onchange = async e => {
       const file = e.target.files[0]; if (!file) return;
       pending = '';
       $('import-confirm').hidden = true;
-      if (file.size > store.LIMIT) { $('import-status').textContent = '파일이 너무 큽니다. 최대 1.5MB까지 읽을 수 있어요.'; return; }
+      if (file.size > store.LIMIT) { $('import-status').textContent = t('파일이 너무 큽니다. 최대 1.5MB까지 읽을 수 있어요.'); return; }
       try {
         const raw = await file.text();
-        if (!store.validate(raw)) throw new Error('지원하는 백업 파일이 아니거나 자료가 손상됐어요. 현재 기록은 유지됩니다.');
+        if (!store.validate(raw)) throw new Error(t('지원하는 백업 파일이 아니거나 자료가 손상됐어요. 현재 기록은 유지됩니다.'));
         pending = raw;
-        $('import-status').textContent = `${Object.keys(JSON.parse(raw).records).length}개 퍼즐 기록을 확인했어요. 현재 기록을 교체할까요?`;
+        $('import-status').textContent = t('{n}개 퍼즐 기록을 확인했어요. 현재 기록을 교체할까요?', {n:Object.keys(JSON.parse(raw).records).length});
         $('import-confirm').hidden = false;
       } catch (error) { $('import-status').textContent = error.message; }
     };
     $('confirm-import').onclick = () => {
       if (!pending) return;
-      try { store.replace(pending); act('reload'); closeDialog(); toast('백업 기록을 복원했어요.'); }
+      try { store.replace(pending); act('reload'); closeDialog(); toast(t('백업 기록을 복원했어요.')); }
       catch (error) { $('import-status').textContent = error.message; }
     };
-    $('cancel-import').onclick = () => { pending = ''; $('import-confirm').hidden = true; $('import-status').textContent = '복원을 취소했어요. 현재 기록을 유지합니다.'; };
+    $('cancel-import').onclick = () => { pending = ''; $('import-confirm').hidden = true; $('import-status').textContent = t('복원을 취소했어요. 현재 기록을 유지합니다.'); };
     $('recovery-options').hidden = !store.recoveryNeeded();
-    $('export-original').onclick = () => download(store.original(), '오늘의퍼즐-보존원본.json');
+    $('export-original').onclick = () => download(store.original(), 'daily-puzzle-original.json');
     $('confirm-recovery').onclick = () => {
       act('save');
-      try { store.replace(store.current()); act('reload'); closeDialog(); toast('복구를 확정하고 자동 저장을 다시 시작했어요.'); }
+      try { store.replace(store.current()); act('reload'); closeDialog(); toast(t('복구를 확정하고 자동 저장을 다시 시작했어요.')); }
       catch (error) { $('import-status').textContent = error.message; }
     };
   }
@@ -166,29 +167,33 @@
   $('resume').onclick = () => { act('pause', 0); $('canvas').focus(); };
   $('share').onclick = async () => {
     if (!state?.completed) return;
-    const text = `오늘의 퍼즐 ${state.day}\n${state.level}×${state.level} 완성 ✦ ${format(state.elapsed)} · 힌트 ${state.hints}회\nhttps://mcroky.github.io/daily-puzzle/`;
-    try { await navigator.clipboard.writeText(text); toast('결과를 복사했어요.'); }
-    catch { openDialog('records'); toast('복사하지 못했어요. 완료 기록에서 확인해 주세요.'); }
+    const text = t('오늘의 퍼즐 {day}\n{n}×{n} 완성 ✦ {time} · 힌트 {hints}회', {day:state.day, n:state.level, time:format(state.elapsed), hints:state.hints}) + '\nhttps://mcroky.github.io/daily-puzzle/';
+    try { await navigator.clipboard.writeText(text); toast(t('결과를 복사했어요.')); }
+    catch { openDialog('records'); toast(t('복사하지 못했어요. 완료 기록에서 확인해 주세요.')); }
   };
   const saveOnLeave = () => act('save');
   window.addEventListener('pagehide', saveOnLeave);
   window.addEventListener('blur', () => { if (callback) { act('save'); act('pause', 1); } });
   document.addEventListener('visibilitychange', () => { if (document.hidden) { act('save'); act('pause', 1); } });
   // A second tab must reload the latest state before writing, never silently overwrite it.
-  window.addEventListener('storage', event => { if (event.key === store.KEY && callback) { act('reload'); act('pause', 1); toast('다른 탭에서 변경된 기록을 불러왔어요.'); } });
+  window.addEventListener('storage', event => { if (event.key === store.KEY && callback) { act('reload'); act('pause', 1); toast(t('다른 탭에서 변경된 기록을 불러왔어요.')); } });
   $('canvas').addEventListener('contextmenu', e => e.preventDefault());
   $('retry-load').onclick = () => location.reload();
   function countdown() {
     const now = Date.now();
     const next = (Math.floor((now + 32400000) / 86400000) + 1) * 86400000 - 32400000;
     const seconds = Math.max(0, Math.floor((next - now) / 1000));
-    $('next-reset').textContent = `다음 퍼즐까지 ${String(Math.floor(seconds / 3600)).padStart(2, '0')}:${format(seconds % 3600)}`;
+    $('next-reset').textContent = t('다음 퍼즐까지 {time}', {time:`${String(Math.floor(seconds / 3600)).padStart(2, '0')}:${format(seconds % 3600)}`});
   }
   countdown(); setInterval(countdown, 1000);
+  window.addEventListener('roky:language', () => {
+    if (state) update(JSON.stringify({...state, message:''}));
+    countdown(); $('announce').textContent = ''; $('toast').hidden = true;
+  });
   window.RokyPuzzle = {
     connectGame: fn => { callback = fn; }, update,
     load: () => store.load(), save: raw => store.save(raw),
-    storageMessage: () => store.message, storageOK: () => store.ok,
+    storageMessage: () => store.messageKey, storageOK: () => store.ok,
     isActive: () => !document.hidden && !$('dialog').open,
     reducedMotion: () => reduceMotion,
   };
@@ -196,14 +201,14 @@
     if (loadingStarted) return; loadingStarted = true;
     try {
       const missing = Engine.getMissingFeatures({ threads: false });
-      if (missing.length) throw new Error('WebGL 2.0 / WebAssembly를 지원하는 최신 브라우저에서 열어주세요.');
+      if (missing.length) throw new Error(t('WebGL 2.0 / WebAssembly를 지원하는 최신 브라우저에서 열어주세요.'));
       await engine.startGame({ canvas: $('canvas'), canvasResizePolicy: 0, focusCanvas: false,
         onProgress: (current, total) => {
-          if (total) { $('load-progress').value = current / total * 100; $('load-status').textContent = `퍼즐 불러오는 중 ${Math.floor(current / total * 100)}%`; }
+          if (total) { $('load-progress').value = current / total * 100; $('load-status').textContent = t('퍼즐 불러오는 중 {n}%', {n:Math.floor(current / total * 100)}); }
         },
       });
     } catch (error) {
-      $('load-status').textContent = `게임을 불러오지 못했어요. ${error.message || '연결을 확인하고 다시 시도해 주세요.'}`;
+      $('load-status').textContent = t('게임을 불러오지 못했어요. {reason}', {reason:error.message || t('연결을 확인하고 다시 시도해 주세요.')});
       $('load-progress').hidden = true;
       $('retry-load').hidden = false;
       console.error(error);

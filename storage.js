@@ -1,6 +1,7 @@
 /* Namespaced, versioned, validated local-only storage. No network requests. */
 (() => {
   'use strict';
+  const t = key => window.RokyI18n ? window.RokyI18n.t(key) : key;
   const KEY = 'roky.daily-puzzle.v1';
   const BACKUP = KEY + '.backup';
   const LIMIT = 1500000;
@@ -68,15 +69,15 @@
     }
   }
   function replace(raw) {
-    if (!validate(raw)) throw new Error('지원하는 백업 파일이 아니거나 자료가 손상됐어요. 현재 기록은 유지됩니다.');
+    if (!validate(raw)) throw new Error(t('지원하는 백업 파일이 아니거나 자료가 손상됐어요. 현재 기록은 유지됩니다.'));
     const oldBlocked = blocked;
     blocked = false;
-    if (!save(raw)) { blocked = oldBlocked; throw new Error('기기 저장 공간에 쓸 수 없어요. 기존 기록을 보존했습니다.'); }
+    if (!save(raw)) { blocked = oldBlocked; throw new Error(t('기기 저장 공간에 쓸 수 없어요. 기존 기록을 보존했습니다.')); }
     return true;
   }
   window.RokyStorage = {
     KEY, BACKUP, LIMIT, validate, load, save, replace,
-    get ok() { return ok; }, get message() { return message; },
+    get ok() { return ok; }, get message() { return t(message); }, get messageKey() { return message; },
     current: () => memory,
     original: () => { try { return localStorage.getItem(KEY) || memory; } catch { return memory; } },
     recoveryNeeded: () => blocked,
