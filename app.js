@@ -179,6 +179,11 @@
   window.addEventListener('storage', event => { if (event.key === store.KEY && callback) { act('reload'); act('pause', 1); toast(t('다른 탭에서 변경된 기록을 불러왔어요.')); } });
   $('canvas').addEventListener('contextmenu', e => e.preventDefault());
   $('retry-load').onclick = () => location.reload();
+  let supportWasPaused = false;
+  window.addEventListener('roky:support', event => {
+    if(event.detail){supportWasPaused=Boolean(state?.paused);act('save');act('pause',1);}
+    else if(!supportWasPaused) act('pause',0);
+  });
   function countdown() {
     const now = Date.now();
     const next = (Math.floor((now + 32400000) / 86400000) + 1) * 86400000 - 32400000;
