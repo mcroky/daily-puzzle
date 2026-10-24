@@ -2,6 +2,6 @@
 
 @media(max-width:380px){.toolbar{flex-direction:column;gap:8px}.assist{width:100%;justify-content:center;gap:24px}.assist button:first-child span{display:inline}}
 /* Keep shared footer links readable when project-wide links are added. */
-footer nav{flex-wrap:wrap;justify-content:center}footer nav a.roky-transfer-link{font-size:10px;min-height:36px;padding:8px 12px}
+footer nav{flex-wrap:wrap;justify-content:center}footer nav a.roky-transfer-link{font-size:10px;min-height:44px;padding:8px 12px}
 /* Web bank transfer: keep Play distribution policy separate. */
 nav.roky-social a.roky-transfer-link,a.roky-transfer-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 12px;box-sizing:border-box;border:1px solid #a28a12;border-radius:9px;background:#ffe14c;color:#242000;font:600 13px/1.4 system-ui,sans-serif;text-decoration:none;white-space:nowrap}nav.roky-social a.roky-transfer-link:hover,a.roky-transfer-link:hover{background:#ffed91;color:#242000}nav.roky-social a.roky-transfer-link:focus-visible,a.roky-transfer-link:focus-visible{outline:3px solid #2676c4;outline-offset:3px}
