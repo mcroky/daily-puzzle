@@ -16,6 +16,16 @@
   <link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
 <link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
 
+
+<style data-roky-support-footer>
+/* Web support stays in document flow, after the page's other content. */
+.roky-support-footer{box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;flex:0 0 auto;clear:both;position:static;width:100%;max-width:100%;min-width:0;margin:0;padding:16px max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));border-top:1px solid #dedfd5;background:#f7f7ef;color:#34483e;text-align:center}
+.roky-support-footer>a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;max-width:100%;margin:0;padding:10px 16px;border:1px solid #a28a12;border-radius:9px;background:#ffe14c;color:#242000;font:600 13px/1.5 system-ui,sans-serif;text-decoration:none;white-space:normal;overflow-wrap:anywhere;cursor:pointer}
+.roky-support-footer>a:hover{background:#ffed91;color:#242000;text-decoration:none}
+.roky-support-footer>a:focus-visible{outline:3px solid #2676c4;outline-offset:3px}
+.roky-support-footer>p{margin:0;color:#596c5d;font:13px/1.7 system-ui,sans-serif}
+.roky-support-footer[hidden]{display:none}
+</style>
 </head>
 <body>
   <a class="skip" href="#play">퍼즐로 바로 가기</a>
@@ -44,7 +54,7 @@
         </div>
         <div class="win" id="win" role="status" hidden><span aria-hidden="true">✦</span><div><b>오늘의 한 장, 완성했어요!</b><p id="win-copy"></p></div><button id="share">결과 복사</button></div>
         <div class="toolbar"><div class="tools" role="group" aria-label="칸 표시 도구"><button data-mode="1" aria-pressed="true" disabled><span class="fill-icon" aria-hidden="true"></span>채우기</button><button data-mode="2" aria-pressed="false" disabled><span aria-hidden="true">×</span>빈칸</button><button data-mode="0" aria-pressed="false" disabled><span aria-hidden="true">◇</span>지우기</button></div><div class="assist"><button id="undo" disabled aria-label="마지막 동작 되돌리기">↶ <span>되돌리기</span></button><button id="hint" disabled><span aria-hidden="true">✧</span> 힌트</button><button id="reset" disabled aria-label="현재 퍼즐 칸 모두 지우기">↺</button></div></div>
-        <div class="game-foot"><span id="storage-status" role="status">내 브라우저에 자동 저장</span><span id="hint-count">힌트 0회 사용</span></div>
+        <div class="game-foot"><span id="storage-status" role="status">내 브라우저에 자동 저장</span><span id="hint-count">힌트 남은 횟수 3/3</span></div>
         <p class="keyboard-note">클릭·드래그로 채우기 <span>·</span> 우클릭으로 빈칸 표시 <span>·</span> 방향키 + Space / X</p>
         <details class="accessible"><summary>텍스트 보드로 플레이하기</summary><p id="clue-text"></p><div id="text-board" role="group" aria-label="텍스트 퍼즐 보드"></div></details>
       </section>
@@ -56,11 +66,12 @@
     </div>
     <section class="bottom-note"><span aria-hidden="true">✳</span><p>매일 다른 퍼즐, 변하지 않는 작은 즐거움.<br><span>내일도 여기서 만나요.</span></p><span class="next-reset" id="next-reset">다음 퍼즐까지 --:--:--</span></section>
   </main>
-  <footer class="wrap"><a class="footer-brand" href="https://mcroky.github.io/roky-studio/"><img src="icon.svg" width="20" height="20" alt=""> 오늘의 퍼즐 <span>by Roky Studio</span></a><nav aria-label="서비스 정보"><a class="roky-social-link roky-ebook-link" data-web-only-commerce href="https://litt.ly/roky.studio" target="_blank" rel="noopener noreferrer" aria-label="로키스튜디오 전자책 새 탭에서 열기">전자책 <span aria-hidden="true">↗</span></a><a class="roky-social-link roky-transfer-link" data-web-only-support href="https://buymeacoffee.com/roky.studio" target="_blank" rel="noopener noreferrer" aria-label="더 좋은 앱을 위한 후원 새 탭에서 열기">더 좋은 앱을 위한 후원 <span aria-hidden="true">↗</span></a><button data-dialog="updates">v1.1.0 · 업데이트</button><button data-dialog="privacy">저장 안내</button><a href="https://x.com/loki60542" target="_blank" rel="me noopener noreferrer" aria-label="X 새 탭에서 열기">X ↗</a><a href="https://www.threads.com/@loki60542" target="_blank" rel="me noopener noreferrer" aria-label="Threads 새 탭에서 열기">Threads ↗</a></nav></footer>
+  <footer class="wrap"><a class="footer-brand" href="https://mcroky.github.io/roky-studio/"><img src="icon.svg" width="20" height="20" alt=""> 오늘의 퍼즐 <span>by Roky Studio</span></a><nav aria-label="서비스 정보"><a class="roky-social-link roky-ebook-link" data-web-only-commerce href="https://litt.ly/roky.studio" target="_blank" rel="noopener noreferrer" aria-label="로키스튜디오 전자책 새 탭에서 열기">전자책 <span aria-hidden="true">↗</span></a><button data-dialog="updates">v1.2.0 · 업데이트</button><button data-dialog="privacy">저장 안내</button><a href="https://x.com/loki60542" target="_blank" rel="me noopener noreferrer" aria-label="X 새 탭에서 열기">X ↗</a><a href="https://www.threads.com/@loki60542" target="_blank" rel="me noopener noreferrer" aria-label="Threads 새 탭에서 열기">Threads ↗</a></nav></footer>
   <p class="sr-only" id="announce" aria-live="polite"></p><div class="toast" id="toast" role="status" hidden></div>
   <dialog id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2><button id="close-dialog" aria-label="닫기">×</button></div><div id="dialog-content"></div></dialog>
+<div class="roky-support-footer" data-web-only-support><a class="roky-social-link roky-transfer-link" data-web-only-support href="https://buymeacoffee.com/roky.studio" target="_blank" rel="noopener noreferrer" aria-label="후원 방법 선택">더 좋은 앱을 위한 후원 <span aria-hidden="true">↗</span></a></div>
   <script src="i18n.js"></script><script src="storage.js"></script><script src="app.js"></script><script src="index.js"></script>
-  <script>window.startPuzzle(new Engine({"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":6813192,"index.wasm":38047590},"focusCanvas":false,"gdextensionLibs":[],"godotPoolSize":4}));</script>
+  <script>window.startPuzzle(new Engine({"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":6813304,"index.wasm":38047590},"focusCanvas":false,"gdextensionLibs":[],"godotPoolSize":4}));</script>
   <script src="bank-copy.js"></script>
 </body>
 </html>
