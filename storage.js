@@ -9,11 +9,17 @@
   let ok = true;
   let message = '기기에 자동 저장됨';
   let memory = '';
+  function validDay(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const date = new Date(value + 'T00:00:00Z');
+    return Number.isFinite(+date) && date.toISOString().slice(0, 10) === value;
+  }
   function validate(raw) {
     if (typeof raw !== 'string' || raw.length > LIMIT) return false;
     try {
       const data = JSON.parse(raw);
       if (!data || data.version !== 1 || data.generator !== 1 || ![5, 7, 9].includes(data.level) || !data.records || typeof data.records !== 'object' || Array.isArray(data.records)) return false;
+      if (data.archiveDay !== undefined && data.archiveDay !== '' && !validDay(data.archiveDay)) return false;
       const entries = Object.entries(data.records);
       if (entries.length > 1500) return false;
       return entries.every(([key, record]) => {
@@ -21,7 +27,7 @@
         const date = new Date(key.slice(0, 10) + 'T00:00:00Z');
         if (!Number.isFinite(+date) || date.toISOString().slice(0, 10) !== key.slice(0, 10)) return false;
         const n = Number(key.slice(11));
-        return record && Array.isArray(record.cells) && record.cells.length === n * n && record.cells.every(c => [0, 1, 2].includes(c)) && ['elapsed', 'hints'].every(k => Number.isInteger(record[k]) && record[k] >= 0 && record[k] <= 31536000) && typeof record.completed === 'boolean';
+        return record && Array.isArray(record.cells) && record.cells.length === n * n && record.cells.every(c => [0, 1, 2].includes(c)) && ['elapsed', 'hints'].every(k => Number.isInteger(record[k]) && record[k] >= 0 && record[k] <= 31536000) && typeof record.completed === 'boolean' && (record.completedOn === undefined || validDay(record.completedOn)) && (record.completionDays === undefined || (Array.isArray(record.completionDays) && record.completionDays.length <= 1095 && record.completionDays.every(validDay)));
       });
     } catch { return false; }
   }

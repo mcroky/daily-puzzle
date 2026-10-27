@@ -36,3 +36,20 @@ html:not([lang=ko]) h1{letter-spacing:-1.5px}
  .footer-brand{flex-wrap:wrap;justify-content:center}
 }
 @media(max-width:550px){.site-header{align-items:flex-start}.site-header nav{width:100%;justify-content:space-between}.studio-back{min-height:32px}.intro{flex-wrap:wrap}.intro>div:first-child{flex:1 1 180px}.daily-stamp{margin-top:7px;max-width:100%}.toolbar{flex-direction:column;gap:8px}.assist{width:100%;justify-content:center;gap:24px}.assist button:first-child span{display:inline}.game-foot{font-size:9px;gap:7px}}
+
+.puzzle-date-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-4px 0 16px;font-size:11px;color:var(--muted)}
+.puzzle-date-controls input{min-height:44px;min-width:0;max-width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit}
+.puzzle-date-controls button{min-height:44px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;font-size:11px}
+#hint[aria-pressed=true]{color:var(--accent);font-weight:700}
+#hint-guide{margin:8px 0 0;color:var(--accent);font-size:11px;line-height:1.6}
+.calendar-heading{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px;margin-top:20px}
+.calendar-heading h3{margin:0;font-size:11px}.calendar-heading>div{display:flex;align-items:center;gap:5px;font-size:10px}
+.calendar-heading button{min-height:44px;width:36px;border-radius:6px;font-size:18px}.calendar-heading button:hover:not(:disabled){background:var(--soft)}
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-top:6px}
+.calendar>span{text-align:center;font-size:11px;color:var(--muted);min-height:25px;display:grid;place-items:center}
+.calendar button{min-width:0;min-height:40px;padding:0;border-radius:6px;color:var(--ink);font-size:12px}
+.calendar button.done{background:#d9e5ce;color:#32492f;font-weight:700}
+.calendar button[aria-pressed=true]{outline:2px solid var(--accent);outline-offset:-2px}
+.calendar button:disabled{opacity:.3}.calendar-note{font-size:9px;color:var(--muted);line-height:1.6;margin:8px 0}
+@media(max-width:760px){.puzzle-date-controls{gap:6px;font-size:10px}.records,.howto{grid-column:1/-1}.calendar button{min-height:44px}.calendar-note{font-size:10px}}
+@media(max-width:380px){.calendar button{min-height:40px}}
